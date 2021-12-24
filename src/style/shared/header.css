@@ -1,0 +1,58 @@
+.m-header-top {
+  height: 48px;
+  line-height: 48px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.m-header-top .m-header-top-left {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-left: 10px;
+}
+.m-header-top-icon i {
+  padding: 0 15px 0 10px;
+}
+.m-header-top .m-header-top-company select {
+  width: 430px;
+  text-transform: uppercase;
+  border: none;
+  outline: none;
+}
+
+/*Header top right*/
+.m-header-top-right {
+  display: flex;
+}
+.m-header-top-notify i {
+  font-size: 17px;
+  margin-right: 20px;
+  color: #666666;
+  font-weight: 400;
+}
+
+.m-header-top-user {
+  display: flex;
+  margin-right: 10px;
+}
+.m-user-icon {
+  padding-top: 3px;
+}
+.m-user-icon i {
+  font-size: 16px;
+  border: 1px solid #c5c4c4;
+  padding: 3px 3px 0 3px;
+  color: #888888;
+  background-color: #c5c4c4;
+  border-radius: 50%;
+  margin-right: 3px;
+}
+.m-user-text {
+  cursor: pointer;
+  margin-right: 4px;
+}
+.m-user-text i {
+  margin-left: 3px;
+  color: rgb(119, 117, 117);
+}
