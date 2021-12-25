@@ -2,13 +2,55 @@
   <div class="m-content">
     <div class="m-header">
       <div class="m-header-text">Nhân viên</div>
-      <button class="m-btn m-btn-add" @click="btnAddOnClick()">
+      <button class="m-btn m-btn-add" @click="showformAdd()">
         Thêm mới nhân viên
       </button>
     </div>
     <div class="m-wrap-content">
       <div class="m-content-search">
-        <div class="m-content-input-search">
+        <div class="m-content-multidel" >
+          <div class="multidel-text">
+            <div class="icon" @click="toggleDelMuti = !toggleDelMuti">
+              <div class="text">
+                <span>Thực hiện hàng loạt</span>
+              </div>
+              <div class="icon">
+                <i class="fas fa-sort-down"></i>
+              </div>
+            </div>
+            <div
+              class="multidel-item"
+              v-show="toggleDelMuti && selectedId.length > 0"
+            >
+              <span style="font-size: 16px" @click="DelMutlRecord">xóa</span>
+            </div>
+          </div>
+        </div>
+         <div class="m-content-right">
+          <div class="m-content-input-search">
+            <input
+              type="text"
+              v-model="searchText"
+              class="m-input-search"
+              placeholder="Tìm kiếm theo mã hoặc tên"
+            />
+            <div id="searchBtn" class="m-icon m-icon-search icon-16"></div>
+          </div>
+          <button @click="refresh" class="m-button-refresh">
+            <div id="btnRefresh">
+              <div class="m-icon m-icon-refresh icon-24"></div>
+            </div>
+          </button>
+          <div>
+            <div
+             
+              class="m-icon m-icon-export-excel icon-24"
+            >
+              <a href="https://localhost:44320/api/v1/Employees/Export"></a>
+            </div>
+          </div>
+        </div>
+        <!-- <div class="m-content-input-search">
           <input
             type="text"
             class="m-input-search"
@@ -16,23 +58,27 @@
             v-model="searchText"
           />
           <i class="fas fa-search"></i>
-        </div>
-        <button class="m-button-refresh" @click="refresh()">
-          <i class="fas fa-redo"></i>
-        </button>
+        </div> -->
+      
       </div>
       <div class="m-table">
         <table border="0" style="width: 100%" cellspacing="0" cellpadding="">
           <thead>
             <tr>
-              <th class="text-align-left"><input type="checkbox"  v-model="isSelectAllId" @click="selectAllId" /></th>
+              <th class="text-align-left">
+                <input
+                  type="checkbox"
+                  v-model="isSelectAllId"
+                  @click="selectAllId"
+                />
+              </th>
               <th class="text-align-left w100">Mã nhân viên</th>
               <th class="text-align-left w200">Tên nhân viên</th>
               <th class="text-align-left w100">Giới tính</th>
               <th class="m-text-center w100">Ngày sinh</th>
               <th class="text-align-left w100">Số CMND</th>
               <th class="text-align-left w100">Chức danh</th>
-              <th class="text-align-left" style="min-width: 100px">
+              <th class="text-align-left" style="min-width: 130px">
                 Tên đơn vị
               </th>
               <th class="text-align-left w10">Số tài khoản</th>
@@ -45,9 +91,15 @@
           </thead>
           <tbody>
             <tr v-for="employee in employees" :key="employee.EmployeeId">
-              <td><input type="checkbox" v-model="selectedId"
-                  @click="selectId(employee.employeeId)" :value="employee.employeeId"/></td>
-              <td >{{ employee.employeeCode }}</td>
+              <td>
+                <input
+                  type="checkbox"
+                  v-model="selectedId"
+                  @click="selectId(employee.employeeId)"
+                  :value="employee.employeeId"
+                />
+              </td>
+              <td>{{ employee.employeeCode }}</td>
               <td>{{ employee.employeeName }}</td>
               <td>{{ employee.gender | formatGender }}</td>
               <td class="m-text-center">
@@ -56,13 +108,11 @@
               <td>{{ employee.identityNumber }}</td>
               <td>{{ employee.employeePosition }}</td>
               <td>{{ employee.departmentName }}</td>
-              <!-- <td>{{ employee.bankAccountNumber }}</td>
+              <td>{{ employee.bankAccountNumber }}</td>
               <td>{{ employee.bankName }}</td>
-              <td>{{ employee.bankBranchName }}</td> -->
+              <td>{{ employee.bankBranchName }}</td>
               <td>
-                <button @click="btnEditOnClick(employee.employeeId)">
-                  Sửa
-                </button>
+                <button @click="showformUpdate(employee)">Sửa</button>
                 <button
                   @click="showContextMenu($event, employee)"
                   class="m-btn-icon down-data-row"
@@ -120,18 +170,23 @@
       <button>Ngừng sử dụng</button>
     </div>
     <EmployeeDetail
-      ref="popupEmployeeDetail" 
+      ref="popupEmployeeDetail"
       v-show="isShow"
       :emp="employee"
       @close-form="btnCloseOnClick"
-      @save="btnSaveOnClick"
     />
+    <!-- @save="btnSaveOnClick" -->
     <!-- các sự kiện của component DialogConfirm -->
-    <DialogConfirm
+    <!-- <DialogConfirm
       :confirmDelete="confirmDelete"
       :employeeCodeDelete="this.employeeCode"
       @delete-Employee="deleteEmployee"
       @cancel-Detele="cancelDetele"
+    /> -->
+    <DialogConfirm
+      @Delete="deleteEmployee"
+      :textMgs="textMgs"
+      ref="popUpDelete"
     />
     <!-- các sự kiện của component DialogError -->
     <DialogError
@@ -139,7 +194,7 @@
       :textError="textError"
       @close-dialog="closeDialog"
     />
-     <!-- các sự kiện của component Loading -->
+    <!-- các sự kiện của component Loading -->
     <Loading :isLoading="isLoading" />
 
     <!-- muon lop con nhan thuoc tinh employee tu cha -->
@@ -155,6 +210,7 @@ import DialogConfirm from "../../components/item/DialogConfirm.vue";
 import ToastMessage from "../../components/item/ToastMessage.vue";
 import DialogError from "../../components/item/DialogError.vue";
 import Loading from "../../components/item/Loading.vue";
+import Resource from "../../js/Resource.js";
 //
 import $ from "jquery"; //tải jquery
 export default {
@@ -202,20 +258,35 @@ export default {
       isShow: false,
       toogleMenu: false,
       confirmDelete: false,
-      employeeCodeDelete: "",
+      textMgs: "",
       isShowToast: false,
       toastText: "",
       isError: false,
       textError: "",
       isLoading: false,
-      employeeCode:"",
+      employeeCode: "",
       // danh sách Id nhân viên khi ấn input checkbox -> xoá nhiều
       selectedId: [],
       // có check toàn bộ ô checkbox hay không -> để lấy toàn bộ Id của nhân viên -> xoá toàn bộ
       isSelectAllId: false,
       //
       employeeId: "",
+      toggleDelMuti: false,
     };
+  },
+  mounted() {
+    //Hook chạy ngay sau khi component đã được compile và lần render (hiển thị) đầu tiên
+    var me = this;
+    me.$refs.popupEmployeeDetail.$on("addSuccess", function () {
+      me.refresh();
+      me.showToastMessage("Đã thêm thành công.");
+    });
+
+    me.$refs.popupEmployeeDetail.$on("updateSuccess", function () {
+   
+      me.showToastMessage("Cập nhật thành công");
+         me.refresh();
+    });
   },
   created() {
     this.loadData();
@@ -230,7 +301,7 @@ export default {
     loadData() {
       axios
         .get(
-          `http://localhost:44834/api/Employees/Paging?limit=${this.pageSize}&pageIndex=${this.pageIndex}&searchtext=${this.searchText}`
+          `${Resource.AMIS_SERVICE_URL}/Employees/Paging?limit=${this.pageSize}&pageIndex=${this.pageIndex}&searchtext=${this.searchText}`
         )
         .then((response) => {
           this.employees = response.data.data;
@@ -263,113 +334,80 @@ export default {
      * Hiện from chi tiết nhân viên
      *  CreatedBy: LÊ THANH NGỌC (14/12/2021)
      */
-    btnAddOnClick() {
-      const me = this;
-      axios
-        .get(`http://localhost:44834/api/Employees/EmployeeNewCode`)
-        .then((response) => {
-          me.employee.employeeCode = response.data;
-          this.isShow = true;
-          // $("txtemployeecode").focus();
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+
+    showformAdd() {
+      this.$refs.popupEmployeeDetail.ShowForm();
     },
-    // showformAdd(){
-    //   this.$refs.popupEmployeeDetail.btnAddOnClick();
-    // },
+    showformUpdate(employee) {
+      this.$refs.popupEmployeeDetail.ShowForm(employee);
+    },
     /**
      * CreatedBy: LÊ THANH NGỌC (14/12/2021)
      * Sự kiện Update dữ liệu
      */
-    btnEditOnClick(employeeid) {
-      var me = this;
-      this.employeeId = employeeid;
-      this.isShow = !this.isShow;
-      axios
-        .get(`http://localhost:44834/api/Employees/` + employeeid)
-        .then((response) => {
-          this.employee = response.data;
-          // this.DepartmentId = response.data.DepartmentId;
-          /* Format lại dữ liệu ngày tháng năm */
-          if (response.data.dateOfBirth != "") {
-            this.employee.dateOfBirth = me.formatDateInput(
-              response.data.dateOfBirth
-            );
-          }
-          if (response.data.identityDate != "") {
-            this.employee.identityDate = this.formatDateInput(
-              response.data.identityDate
-            );
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    },
-    /**
-     * CreatedBy: LÊ THANH NGỌC (14/12/2021)
-     * sự kiện lưu dữ liệu (chả)
-     */
-    btnSaveOnClick() {
-      var me = this;
-      //lấy dữ liệu
 
-      if (me.employeeId != "") {
-        // //gọi api thực hiện cất dữ liệu
-        axios
-          .put(
-            "http://localhost:44834/api/Employees/" + me.employeeId,
-            me.employee
-          )
-          .then(() => {
-            me.showToastMessage();
-            me.employeeId = "";
-            me.toastText = "Đã sửa thành công";
-            // sửa thành công sẽ gọi sự kiện close form
-            me.btnCloseOnClick();
+    // /**
+    //  * CreatedBy: LÊ THANH NGỌC (14/12/2021)
+    //  * sự kiện lưu dữ liệu (chả)
+    //  */
+    // btnSaveOnClick() {
+    //   var me = this;
+    //   //lấy dữ liệu
 
-            //dữ liệu trên form null
-            //sự kiện refresh dữ liệu
-            me.refresh();
-          })
-          .catch(function (res) {
-             const statusCode = res.response.status;
-            switch (statusCode) {
-              case 400:
-                me.textError = res.response.data.data[0];
-                me.isError = true;
-                break;
-              default:
-                break;
-            }
-          });
-      } else {
-        axios
-          .post("http://localhost:44834/api/employees", me.employee)
-          .then(() => {
-            me.showToastMessage();
-            me.toastText = "Đã thêm thành công";
-            //thêm thành công thì tự động đóng form
-            me.btnCloseOnClick();
+    //   if (me.employeeId != "") {
+    //     // //gọi api thực hiện cất dữ liệu
+    //     axios
+    //       .put(
+    //         "http://localhost:44834/api/Employees/" + me.employeeId,
+    //         me.employee
+    //       )
+    //       .then(() => {
+    //         me.showToastMessage();
+    //         me.employeeId = "";
+    //         me.toastText = "Đã sửa thành công";
+    //         // sửa thành công sẽ gọi sự kiện close form
+    //         me.btnCloseOnClick();
 
-            //sự kiện refresh dữ liệu
-            me.refresh();
-          })
-          .catch(function (res) {
-            const statusCode = res.response.status;
-            switch (statusCode) {
-              case 400:
-                me.textError = res.response.data.data[0];
-                me.isError = true;
-                break;
-              default:
-                break;
-            }
-          });
-      }
-    },
+    //         //dữ liệu trên form null
+    //         //sự kiện refresh dữ liệu
+    //         me.refresh();
+    //       })
+    //       .catch(function (res) {
+    //          const statusCode = res.response.status;
+    //         switch (statusCode) {
+    //           case 400:
+    //             me.textError = res.response.data.data[0];
+    //             me.isError = true;
+    //             break;
+    //           default:
+    //             break;
+    //         }
+    //       });
+    //   } else {
+    //     axios
+    //       .post("http://localhost:44834/api/employees", me.employee)
+    //       .then(() => {
+    //         me.showToastMessage();
+    //         me.toastText = "Đã thêm thành công";
+    //         //thêm thành công thì tự động đóng form
+    //         me.btnCloseOnClick();
+
+    //         //sự kiện refresh dữ liệu
+    //         me.refresh();
+    //       })
+    //       .catch(function (res) {
+    //         const statusCode = res.response.status;
+    //         switch (statusCode) {
+    //           case 400:
+    //             me.textError = res.response.data.data[0];
+    //             me.isError = true;
+    //             break;
+    //           default:
+    //             break;
+    //         }
+    //       });
+    //   }
+    // },
     /**
      * Hiển thị menu chức năng: xoá, nhân bản, ngưng sử dụng
      * CreatedBy: lê thanh ngọc (19/12/2021)
@@ -389,14 +427,15 @@ export default {
       contextMenu.css("left", `calc(${left_pos}px - 86px)`);
 
       this.employeeId = employee.employeeId; //lấy id nv đẻ xóa
-      this.employeeCode=employee.employeeCode;//lấy mã nv để hiển thị
+      this.employeeCode = employee.employeeCode; //lấy mã nv để hiển thị
     },
 
     //sự kiện đóng form
     btnCloseOnClick() {
-      this.employee = {};
-      this.isShow = !this.isShow;
-      this.loadData();
+      // this.employee = {};
+      //this.isShow = !this.isShow;
+      //this.loadData();
+      this.$refs.popupEmployeeDetail.closeForm();
     },
 
     /**
@@ -404,16 +443,21 @@ export default {
      * CreatedBy:lê thanh ngọc (19/12/2021)
      */
     showFormDelete() {
-      this.confirmDelete = true;
+      var me = this;
+      me.$refs.popUpDelete.showForm();
+      me.toogleMenu = !me.toogleMenu;
+      me.textMgs = `Bạn có muốn xóa nhân viên có mã <${me.employeeCode}> không?`;
     },
+
     /**
-     * Huỷ xoá
-     * CreatedBy: lê thanh ngọc (19/12/2021)
+     * Xóa nhiều bản ghi
+     * CreateBy: NVChien(23/12/2021)
      */
-    cancelDetele() {
-      this.confirmDelete = !this.confirmDelete;
-      this.employeeCodeDelete = "";
-      this.toogleMenu = false;
+    DelMutlRecord() {
+      this.toggleDelMuti = !this.toggleDelMuti;
+      this.toogleMenu = !this.toogleMenu;
+      this.textMgs = `Bạn có thực sự muốn danh danh sách nhân viên đã chọn?`;
+      this.$refs.popUpDelete.showForm();
     },
 
     /**
@@ -429,32 +473,49 @@ export default {
      * CreatedBy: lê thanh ngọc (19/12/2021)
      */
     deleteEmployee() {
-      const me = this;
-      this.confirmDelete = false;
-      axios
-        .delete(`http://localhost:44834/api/Employees/` + me.employeeId)
-        .then(() => {
-          me.showToastMessage();
-          me.toastText = "Xoá thành công";
-          me.toogleMenu = false;
-          me.refresh();
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      if (this.selectedId.length > 0) {
+        axios
+          .post(
+            `${Resource.AMIS_SERVICE_URL}/Employees/DeleteList/`,
+            this.selectedId
+          )
+          .then(() => {
+            this.$refs.popUpDelete.hideForm();
+            this.selectedId = [];
+            this.showToastMessage("Xóa danh sách thành công");
+            //this.toastText = ;
+            this.refresh();
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      } else {
+        axios
+          .delete(`${Resource.AMIS_SERVICE_URL}/Employees/` + this.employeeId)
+          .then(() => {
+            this.$refs.popUpDelete.hideForm();
+            this.showToastMessage("Xóa thành công");
+
+            this.refresh();
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     },
     /**
      * Hiển thị Thông báo success
      * CreatedBy: lê thanh ngọc (19/12/2021)
      */
-    showToastMessage() {
+    showToastMessage(string) {
       setTimeout(() => {
-         this.isShowToast = true;
+        this.isShowToast = true;
       }, 1000);
-     
+
       setTimeout(() => {
         this.isShowToast = false;
       }, 3000);
+      this.toastText = string;
     },
     /**
      * Refresh lại data
@@ -463,12 +524,12 @@ export default {
     refresh() {
       this.employeeId = "";
       this.loadData();
-        this.isLoading = true;
+      this.isLoading = true;
       setTimeout(() => {
         this.isLoading = false;
       }, 1000);
     },
-     /**
+    /**
      * Thực hiện lấy toàn bộ Id nhân viên ô checkbox
      * CreatedBy: lê thanh ngọc (24/12/2021)
      */
@@ -482,24 +543,24 @@ export default {
       }
       // console.log(this.selectedId);
     },
-      /**
+    /**
      * Thực hiện lấy từng giá trị Id nhân viên một, tham số truyền vào là một EmployeeId
      * CreatedBy:  lê thanh ngọc (24/12/2021)
      */
-    // selectId(employeeId) {
-    //   // kiểm tra xem Id đã tồn tại trong mảng selectedId hay chưa
-    //   if (!this.selectedId.includes(employeeId)) {
-    //     this.selectedId.push(employeeId);
-    //   } else {
-    //     // nếu Id đã tồn tại trong mảng selectedId thì sẽ xoá Id đó khỏi mảng - tức là khi 2 lần vào ô checkbox
-    //     this.selectedId.forEach((item, index) => {
-    //       if (employeeId == item) {
-    //         this.selectedId.splice(index, 1);
-    //       }
-    //     });
-    //   }
-    //   console.log(this.selectedId);
-    // },
+    selectId(employeeId) {
+      // kiểm tra xem Id đã tồn tại trong mảng selectedId hay chưa
+      if (!this.selectedId.includes(employeeId)) {
+        this.selectedId.push(employeeId);
+      } else {
+        // nếu Id đã tồn tại trong mảng selectedId thì sẽ xoá Id đó khỏi mảng - tức là khi 2 lần vào ô checkbox
+        this.selectedId.forEach((item, index) => {
+          if (employeeId == item) {
+            this.selectedId.splice(index, 1);
+          }
+        });
+      }
+      console.log(this.selectedId);
+    },
     /**
      * định dạng date trong thẻ input
      */

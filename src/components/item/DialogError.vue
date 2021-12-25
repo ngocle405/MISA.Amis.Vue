@@ -12,7 +12,7 @@
       <div class="m-mess-line"></div>
       <div class="m-message-footer">
         <div class="m-flex-space"></div>
-        <button class="m-btn" @click="closeDialogError">Đồng ý</button>
+        <button class="m-btn" @click="hideForm">Đồng ý</button>
       </div>
     </div>
   </div>
@@ -21,18 +21,24 @@
 <script>
 export default {
   props: {
-    isError: Boolean,
+    //isError: Boolean,
     textError: String,
   },
+ 
+  data() {
+    return {
+      isError: false,
+    };
+  },
   methods: {
-    /**
-     * Gọi sang component cha để đóng thông báo
-     * CreatedBy: Lê thanh ngọc (24/12/2021)
-     */
-    closeDialogError() {
-      this.$emit("close-dialog");
+     showFormError() {
+      this.isError = true;
+    },
+    hideForm() {
+      this.isError = false;
     },
   },
+ 
 };
 </script>
 

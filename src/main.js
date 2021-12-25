@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import App from './App.vue'
 import VueRouter from "vue-router";
+import Vuelidate from 'vuelidate'
+
+Vue.use(Vuelidate)
 //import 
 //import Home from "./view/home/Index.vue";
 import Employee from "./view/employee/EmployeeList.vue";

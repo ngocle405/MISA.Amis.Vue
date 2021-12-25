@@ -13,6 +13,16 @@ input::placeholder {
   display: flex;
   justify-items: center;
   align-items: center;
+  position: relative;
+}
+.m-content-input-search .m-icon-search {
+  position: absolute;
+  top: -2px;
+  padding-left: 5px;
+  left: 100%;
+  -webkit-transform: translate(-28px, 8px);
+  transform: translate(-28px, 8px);
+  cursor: pointer;
 }
 .m-input-error {
   border: 1px solid red !important;
@@ -21,7 +31,7 @@ input::placeholder {
   border: none;
   outline: none;
   padding-left: 10px;
-  padding-right: 25px;
+  padding-right: 30px;
   border: 1px solid rgb(196, 193, 193);
   height: 24px;
   position: relative;
@@ -140,4 +150,14 @@ input[type="radio"]:checked::before {
   width: 12px;
   height: 12px;
   background-color: #2ca01c;
+}
+
+input[type="radio" i] {
+  background-color: green !important;
+  cursor: default;
+  appearance: auto;
+  box-sizing: border-box;
+  margin: 3px 3px 0px 5px;
+  padding: initial;
+  border: initial;
 }

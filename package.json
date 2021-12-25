@@ -11,9 +11,12 @@
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "jquery": "^3.6.0",
+    "save": "^2.4.0",
+    "Validator": "^1.1.4",
     "vue": "^2.6.11",
     "vue-router": "^3.5.3",
-    "vuejs-paginate": "^2.1.0"
+    "vuejs-paginate": "^2.1.0",
+    "vuelidate": "^0.7.7"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

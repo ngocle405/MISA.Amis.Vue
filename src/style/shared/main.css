@@ -16,13 +16,13 @@
 
 body {
   margin: 0;
-  font-family: Notosans-Regular;
+  font-family: Notosans-Bold;
   font-size: 13px;
   box-sizing: border-box;
 }
 @font-face {
   font-family: "Notosans-Bold";
-  src: url(../../assets/fonts/notosans-bold.3ede5aff.woff2);
+  src: url(../../assets/fonts/notosans-regular.2cb88a13.woff2);
 }
 @font-face {
   font-family: "Notosans-Italic";

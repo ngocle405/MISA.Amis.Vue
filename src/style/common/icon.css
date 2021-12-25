@@ -1,6 +1,7 @@
 .m-icon {
   background-image: url("./../../assets/img/Sprites.64af8f61.svg");
   background-repeat: no-repeat;
+  cursor: pointer;
 }
 
 .icon-32 {
@@ -8,15 +9,6 @@
   width: 32px;
   min-width: 32px;
   min-height: 32px;
-  flex-shrink: 0;
-}
-
-.icon-28 {
-  height: 28px;
-  width: 28px;
-  min-width: 28px;
-  min-height: 28px;
-  flex-shrink: 0;
 }
 
 .icon-24 {
@@ -24,7 +16,7 @@
   width: 24px;
   min-width: 24px;
   min-height: 24px;
-  flex-shrink: 0;
+  margin-right: 8px;
 }
 
 .icon-16 {
@@ -32,7 +24,6 @@
   width: 16px;
   min-width: 16px;
   min-height: 16px;
-  flex-shrink: 0;
 }
 
 .icon-14 {
@@ -40,7 +31,6 @@
   width: 14px;
   min-width: 14px;
   min-height: 14px;
-  flex-shrink: 0;
 }
 
 .icon-48 {
@@ -81,7 +71,12 @@
 .m-icon-refresh:hover {
   background-position: -1097px -88px;
 }
-
+.m-icon-export-excel {
+  background-position: -704px -200px;
+}
+.m-icon-export-excel:hover {
+  background-position: -704px -256px;
+}
 /* COMBOBOX ICONS */
 
 .m-icon-arrow-down {
@@ -161,11 +156,11 @@
   background-position: -249px -1585px;
 }
 
-.m-icon-storage {
+.m-icon-warehouse {
   background-position: -291px -1628px;
 }
 
-.m-navbar-item.active .m-icon-storage {
+.m-navbar-item.active .m-icon-warehouse {
   background-position: -291px -1585px;
 }
 
